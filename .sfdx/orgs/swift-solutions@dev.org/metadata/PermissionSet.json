@@ -1,0 +1,45 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005d2000003t78nAAA",
+      "createdByName": "Oscar Shanagher",
+      "createdDate": "2025-01-14T08:09:20.000Z",
+      "fileName": "permissionsets/Bookkeeping.permissionset",
+      "fullName": "Bookkeeping",
+      "id": "0PSd2000003dKTNGA2",
+      "lastModifiedById": "005d2000003t78nAAA",
+      "lastModifiedByName": "Oscar Shanagher",
+      "lastModifiedDate": "2025-01-14T08:13:58.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005d2000003t78nAAA",
+      "createdByName": "Oscar Shanagher",
+      "createdDate": "2025-01-13T07:39:59.000Z",
+      "fileName": "permissionsets/Experience_Profile_Manager.permissionset",
+      "fullName": "Experience_Profile_Manager",
+      "id": "0PSd2000003bTDJGA2",
+      "lastModifiedById": "005d2000003t78nAAA",
+      "lastModifiedByName": "Oscar Shanagher",
+      "lastModifiedDate": "2025-01-14T08:04:10.000Z",
+      "manageableState": "unmanaged",
+      "type": "PermissionSet"
+    },
+    {
+      "createdById": "005d2000003t7AQAAY",
+      "createdByName": "Automated Process",
+      "createdDate": "2025-01-13T07:39:59.000Z",
+      "fileName": "permissionsets/sfdcInternalInt__sfdc_scrt2.permissionset",
+      "fullName": "sfdcInternalInt__sfdc_scrt2",
+      "id": "0PSd2000003bTCbGAM",
+      "lastModifiedById": "005d2000003t78nAAA",
+      "lastModifiedByName": "Oscar Shanagher",
+      "lastModifiedDate": "2025-01-14T08:04:10.000Z",
+      "manageableState": "unmanaged",
+      "namespacePrefix": "sfdcInternalInt",
+      "type": "PermissionSet"
+    }
+  ]
+}

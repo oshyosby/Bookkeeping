@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsReconciled__c</fullName>
+    <formula>IF(AND(Credit__c == Debit__c,Credit__c &gt; 0,Credit__c &gt; 0), true, false)</formula>
+    <label>Reconciled?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
