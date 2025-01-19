@@ -16,13 +16,14 @@
             <property name="value" type="String" label="Default Value"/>
         </targetConfig>
         <targetConfig targets="lightning__FlowScreen" configurationEditor="c-picklist-master-editor">
-            <property name="listLabel" type="String"/>
-            <property name="listType" type="String"/>
-            <property name="listSource" type="String"/>
-            <property name="sourceObject" type="String"/>
-            <property name="objectField" type="String"/>
-            <property name="multiSelect" type="Boolean" default="false"/>
-            <property name="navigational" type="Boolean" default="false"/>
+            <property name="listLabel" type="String" role="inputOnly"/>
+            <property name="listType" type="String" role="inputOnly"/>
+            <property name="listSource" type="String" role="inputOnly"/>
+            <property name="sourceObject" type="String" role="inputOnly"/>
+            <property name="objectField" type="String" role="inputOnly"/>
+            <property name="picklistValues" type="String" role="inputOnly"/>
+            <property name="multiSelect" type="Boolean" default="false" role="inputOnly"/>
+            <property name="navigational" type="Boolean" default="false" role="inputOnly"/>
             <property name="value" type="String"/>
         </targetConfig>
     </targetConfigs>

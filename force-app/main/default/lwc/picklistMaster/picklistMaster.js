@@ -14,6 +14,7 @@ export default class PicklistMaster extends LightningElement {
     @api listSource;
     @api sourceObject;
     @api objectField;
+    @api picklistValues;
     @api multiSelect;
     @api navigational;
     @api options = dummyOptions;

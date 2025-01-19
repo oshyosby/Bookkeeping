@@ -43,9 +43,10 @@ public with sharing class PicklistMaster {
         }
     }
 
-    @AuraEnabled
+    @AuraEnabled(cacheable=true)
     public static List<FieldInfo> GetObjectFields(String sourceObject, List<String> dataTypes){
         List<FieldInfo> objectFieldInfoList = new List<FieldInfo>();
+        if(sourceObject == null || sourceObject == '') return objectFieldInfoList;
         System.debug('Data Types: '+dataTypes);
 
         try {

@@ -1,27 +1,8 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import GetObjectTypes from '@salesforce/apex/PicklistMaster.GetObjectTypes';
 import GetObjectFields from '@salesforce/apex/PicklistMaster.GetObjectFields';
-import GetPicklistFieldValues from '@salesforce/apex/PropertyEditor_ObjectConfiguration.GetPicklistFieldValues';
-
-const multiSelectTypes = ['checkbox','button'];
-
-const inputTypeMap = {
-    listLabel: 'String',
-    listType: 'String',
-    listSource: 'String',
-    sourceObject: 'String',
-    objectField: 'String',
-    multiSelect: 'Boolean',
-    navigational: 'Boolean',
-    value: 'String'
-}
-
-const dataTypes = [
-    'BOOLEAN',
-    'COMBOBOX',
-    'PICKLIST',
-    'MULTIPICKLIST'
-]
+import GetPicklistValues from '@salesforce/apex/PicklistMaster.GetPicklistValues';
+import { inputTypeMap, multiSelectTypes, dataTypes, listDataSource, picklistTypes } from './picklistMasterEditorUtils.js';
 
 export default class PicklistMasterEditor extends LightningElement {
 
@@ -31,20 +12,6 @@ export default class PicklistMasterEditor extends LightningElement {
 
     get dataTypes() {
         return dataTypes;
-    }
-
-    get sourceObjectOptions() {
-        return this._sourceObjects !== undefined ? this._sourceObjects : [];
-    }
-
-    get objectFieldOptions() {
-        if(this._objectFields === undefined) return [];
-        return this._objectFields.map(objectField => {
-            return {
-                label: objectField.label,
-                value: objectField.apiName
-            };
-        });
     }
 
     _inputVariables = [];
@@ -68,12 +35,7 @@ export default class PicklistMasterEditor extends LightningElement {
     }
 
     get listTypeOptions() {
-        return [
-            { label: 'Checkbox', value: 'checkbox' },
-            { label: 'Radio', value: 'radio' },
-            { label: 'Dropdown', value: 'dropdown'},
-            { label: 'Button', value: 'button'},
-        ]
+        return picklistTypes;
     }
     get listType() {
         const param = this.inputVariables.find(({ name }) => name === "listType");
@@ -88,11 +50,7 @@ export default class PicklistMasterEditor extends LightningElement {
     }
 
     get listSourceOptions() {
-        return [
-            { label: 'SObject Field', value: 'field' },
-            { label: 'Custom', value: 'custom' },
-            //{ label: 'SObject Records', value: 'records'},
-        ]
+        return listDataSource;
     }
     get listSource() {
         const param = this.inputVariables.find(({ name }) => name === "listSource");
@@ -101,19 +59,24 @@ export default class PicklistMasterEditor extends LightningElement {
     handleListSource(event) {
         const newValue = event.target.value;
         this.handleChange("listSource",newValue);
+        this.handleChange("sourceObject","");
     }
 
+    get sourceObjectOptions() {
+        if(this._sourceObjects === undefined) return [];
+        return this._sourceObjects.map(objectType => {
+            return {
+                label: objectType.label,
+                value: objectType.apiName
+            };
+        });
+    }
     _sourceObjects;
     @wire(GetObjectTypes)
     wiredGetObjectTypes({ error, data }) {
         if (data) {
             console.log('Get Object Types Data: '+JSON.stringify(data));
-            this._sourceObjects = data.map(objectType => {
-                return {
-                    label: objectType.label,
-                    value: objectType.apiName
-                };
-            });
+            this._sourceObjects = data;
         } else if(error)  {
             console.log('Get Object Types Error: '+JSON.stringify(error));
         } 
@@ -125,21 +88,33 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "sourceObject");
         return param && param.value;
     }
+    @track _sourceObject;
     handleSourceObject(event) {
         const newValue = event.target.value;
+        this._sourceObject = newValue;
         this.handleChange("sourceObject",newValue);
-
-        GetObjectFields({ sourceObject: newValue, dataTypes: this.dataTypes })
-        .then(data => {
-            console.log('Get Object Fields Data: '+JSON.stringify(data));
-            this._objectFields = data;
-        })
-        .catch(error => {
-            console.log('Get Object Fields Error: '+JSON.stringify(error));
-        });
+        this.handleChange("objectField","");
     }
 
+    get objectFieldOptions() {
+        if(this._objectFields === undefined) return [];
+        return this._objectFields.map(objectField => {
+            return {
+                label: objectField.label,
+                value: objectField.apiName
+            };
+        });
+    }
     _objectFields;
+    @wire(GetObjectFields, { sourceObject: '$_sourceObject', dataTypes: '$dataTypes' })
+    wiredGetObjectFields({ error, data }) {
+        if (data) {
+            console.log('Get Object Fields Data: '+JSON.stringify(data));
+            this._objectFields = data;
+        } else if(error)  {
+            console.log('Get Object Fields Error: '+JSON.stringify(error));
+        } 
+    }
     get objectFieldRequired() {
         return this.listSource === 'field';
     }
@@ -147,17 +122,94 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "objectField");
         return param && param.value;
     }
+    @track _objectField;
     handleObjectField(event) {
         const newValue = event.target.value;
+        this._objectField = newValue;
         this.handleChange("objectField",newValue);
     }
 
+    get picklistValueOptions() {
+        return this._picklistValues;
+    }
     _picklistValues;
+    _objectFieldValues;
+    @wire(GetPicklistValues, {sourceObject: '$_sourceObject', picklistField: '$_objectField'})
+    wiredGetPicklistValues({error, data}) {
+        if(data) {
+            console.log('Get Picklist Values Data: '+JSON.stringify(data));
+            const formattedData = data.map(picklistValue => {
+                return {
+                    id: picklistValue.value,
+                    label: picklistValue.label,
+                    value: picklistValue.value,
+                    editing: false,
+                    updated: false,
+                    fixedValue: true
+                };
+            });
+            this._objectFieldValues = formattedData;
+            this._picklistValues = formattedData;
+            console.log(this._picklistValues);
+            
+        } else if(error) {
+            console.log('Get Picklist Values Error: '+JSON.stringify(error));
+        }
+    }
     get picklistValues() {
         const param = this.inputVariables.find(({ name }) => name === "picklistValues");
         return param && param.value;
     }
-    
+    handleOptionAction(event) {
+        const selectedAction = event.detail.value;
+        const optionId = event.currentTarget.dataset.id;
+        console.log('Option Action: '+selectedAction);
+        console.log('Option Id: '+optionId);
+        switch (selectedAction) {
+            case 'edit':
+                this.handleEditOption(optionId);
+                break;
+            case 'remove':
+                this.handleRemoveOption(optionId);
+                break;
+            default:
+                break;
+        }
+    }
+    handleEditOption(optionId) {
+        const optionToUpdate = this._picklistValues.filter(option => option.id == optionId);
+        if(optionToUpdate === undefined) return;
+        optionToUpdate.editing = true;
+        //this.handleValueOptions(this._picklistValues) 
+    }
+    handleRemoveOption(optionId) {
+        const optionToRemove = this._picklistValues.filter(option => option.id == optionId);
+        if(optionToRemove == undefined) return;
+        const updatedValues = this._picklistValues.filter(option => option.id !== optionId);
+        this.handleValueOptions(updatedValues) 
+    }
+
+    handleAddOption(event) {
+        const optionId = '';
+        if(this._picklistValues === undefined) this._picklistValues = [];
+        this._picklistValues.push({ 
+            id: optionId, 
+            label: '', 
+            value: '', 
+            editing: true,
+            updated: false,
+            fixedValue: false 
+        });
+        //this.handleValueOptions(this._picklistValues) 
+    }
+    handleResetOptions(event) {
+        const newValues = this._objectFieldValues ?? [];
+        this.handleValueOptions(newValues);
+    }
+    handleValueOptions(newValues) {
+        this._picklistValues = newValues
+        this.handleChange("picklistValues",JSON.stringify(this._picklistValues));
+    }
 
     get multiSelect() {
         const param = this.inputVariables.find(({ name }) => name === "multiSelect");
@@ -212,7 +264,6 @@ export default class PicklistMasterEditor extends LightningElement {
             },
         });
         this.dispatchEvent(valueChangedEvent);
-        console.log('inputVariables: '+JSON.stringify(this.inputVariables));
     }
 
 
@@ -278,6 +329,20 @@ export default class PicklistMasterEditor extends LightningElement {
                 sourceObjectCmp.setCustomValidity("");
             }
             sourceObjectCmp.reportValidity();
+
+            console.log('Validate Object Field');
+            const objectFieldCmp = this.template.querySelector('[data-id="objectFieldInput"]')
+            if(this.objectField === undefined || this.objectField === "") {
+                const error = "Object Field is required";
+                objectFieldCmp.setCustomValidity(error);
+                validity.push({
+                    key: "Object Field",
+                    errorString: error,
+                });
+            } else {
+                objectFieldCmp.setCustomValidity("");
+            }
+            objectFieldCmp.reportValidity();
         }
 
         //const multiSelectCmp = this.template.querySelector("lightning-input[name=multiSelect]");
@@ -285,5 +350,72 @@ export default class PicklistMasterEditor extends LightningElement {
         //const valueCmp = this.template.querySelector("lightning-input[name=value]");
 
         return validity;
+    }
+
+    draggedItem = null;
+    draggedIndex = null;
+
+    constructor() {
+        super();
+        this.template.addEventListener('dragstart', this.handleDragStart.bind(this));
+        this.template.addEventListener('dragover', this.handleDragOver.bind(this));
+        this.template.addEventListener('drop', this.handleDrop.bind(this));
+        this.template.addEventListener('dragend', this.handleDragEnd.bind(this));
+    }
+
+    handleDragStart(event) {
+        const item = event.target.closest('[data-item-id]');
+        if (item) {
+            this.draggedItem = item;
+            this.draggedIndex = parseInt(item.dataset.index, 10);
+            item.classList.add('dragging');
+            
+            // Required for Firefox
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', ''); // Required for IE
+        }
+    }
+
+    handleDragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+
+        const item = event.target.closest('[data-item-id]');
+        if (!item || item === this.draggedItem) return;
+
+        const itemRect = item.getBoundingClientRect();
+        const midpoint = itemRect.top + itemRect.height / 2;
+
+        if (event.clientY > midpoint) {
+            item.parentNode.insertBefore(this.draggedItem, item.nextElementSibling);
+        } else {
+            item.parentNode.insertBefore(this.draggedItem, item);
+        }
+    }
+
+    handleDrop(event) {
+        event.preventDefault();
+        const dropIndex = parseInt(event.target.closest('[data-item-id]').dataset.index, 10);
+        
+        if (this.draggedIndex !== null && dropIndex !== this.draggedIndex) {
+            const newItems = [...this._picklistValues];
+            const [movedItem] = newItems.splice(this.draggedIndex, 1);
+            newItems.splice(dropIndex, 0, movedItem);
+
+            const newValues = newItems.map((item, index) => ({
+                ...item,
+                order: index + 1
+            }));
+
+            this.handleValueOptions(newValues)
+        }
+    }
+
+    handleDragEnd(event) {
+        if (this.draggedItem) {
+            this.draggedItem.classList.remove('dragging');
+            this.draggedItem = null;
+            this.draggedIndex = null;
+        }
     }
 }
