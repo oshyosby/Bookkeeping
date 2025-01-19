@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Picklist Master</masterLabel>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__HomePage">
+            <property name="listLabel" type="String" label="List Label" required="true"/>
+            <property name="listType" type="String" label="List Type" required="true"/>
+            <property name="multiSelect" type="Boolean" label="Multiselect List?" description="Only valid for Checkbox and Button" default="false"/>
+            <property name="navigational" type="Boolean" label="Navigational?" description="Navigate to next screen on option selection" default="false"/>
+            <property name="value" type="String" label="Default Value"/>
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen" configurationEditor="c-picklist-master-editor">
+            <property name="listLabel" type="String"/>
+            <property name="listType" type="String"/>
+            <property name="listSource" type="String"/>
+            <property name="sourceObject" type="String"/>
+            <property name="objectField" type="String"/>
+            <property name="multiSelect" type="Boolean" default="false"/>
+            <property name="navigational" type="Boolean" default="false"/>
+            <property name="value" type="String"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

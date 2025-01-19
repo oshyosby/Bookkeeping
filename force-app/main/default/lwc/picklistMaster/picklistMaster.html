@@ -1,0 +1,65 @@
+<template>
+    <div lwc:if={getOptions} class="slds-p-around_small slds-box slds-card">
+        <div lwc:if={isCheckbox}>
+            <lightning-checkbox-group
+                lwc:if={isMultiSelect}
+                label={getListLabel}
+                options={getOptions}
+                value={checkBoxGroupValue}
+                onchange={handleCheckboxGroupValue}>
+            </lightning-checkbox-group>
+            <div lwc:else class="slds-form-element">
+                <label class="slds-form-element__label" for="checkbox_list">{getListLabel}</label>
+                <div id="checkbox_list" class="slds-form-element__control">
+                    <template for:each={checkboxOptions} for:item="option">
+                        <lightning-input 
+                            key={option.value}
+                            name={option.value}
+                            type="checkbox"
+                            label={option.label}
+                            checked={option.checked}
+                            onchange={handleCheckboxValue}>
+                        </lightning-input>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div lwc:if={isRadio}>
+            <lightning-radio-group 
+                name="radioGroup"
+                label={getListLabel}
+                options={getOptions}
+                value={value}
+                type="radio"
+                onchange={handleRadioValue}>
+            </lightning-radio-group>
+        </div>
+        <div lwc:if={isDropdown}>
+            <lightning-combobox
+                name="dropdown"
+                label={getListLabel}
+                options={options}
+                value={value}
+                onchange={handleDropdownValue}>
+            </lightning-combobox>
+        </div>
+        <div lwc:if={isButton} class="slds-form-element slds-text-align_center">
+            <label class="slds-form-element__label" for="button_list">{getListLabel}</label>
+            <div id="button_list" class="slds-form-element__control">
+                <ul>
+                    <template for:each={buttonOptions} for:item="option">
+                        <li key={option.value} class="slds-p-vertical_xx-small">
+                            <lightning-button 
+                                stretch="true"
+                                label={option.label}
+                                name={option.value}
+                                variant={option.variant}
+                                onclick={handleButtonValue}>
+                            </lightning-button>
+                        </li>
+                    </template>    
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,114 @@
+<template>
+    <lightning-layout multiple-rows>
+        <lightning-layout-item size="12">
+            <lightning-input 
+                class="slds-p-vertical_xx-small"
+                type="text" 
+                name="listLabel" 
+                label="List Label" 
+                value={listLabel}
+                onchange={handleListLabel} 
+                data-id="listLabelInput"
+                required>
+            </lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="12">
+            <lightning-accordion active-section-name={activeSections} allow-multiple-sections-open>
+                <lightning-accordion-section name="listType" label="List Type Config">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12">
+                            <lightning-combobox
+                                class="slds-p-vertical_xx-small"
+                                name="listType"
+                                label="List Type"
+                                value={listType}
+                                options={listTypeOptions}
+                                onchange={handleListType} 
+                                data-id="listTypeInput"
+                                required>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6">
+                            <lightning-input
+                                class="slds-p-vertical_xx-small"
+                                lwc:if={multiSelectEnabled}
+                                type="toggle"
+                                name="multiSelect"
+                                checked={multiSelect}
+                                label="Multi Select?"
+                                message-toggle-active="Enabled"
+                                message-toggle-inactive="Disabled"
+                                onchange={handleMultiSelect}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6">
+                            <lightning-input
+                                class="slds-p-vertical_xx-small"   
+                                lwc:if={navigationEnabled}
+                                type="toggle"
+                                name="navigational"
+                                checked={navigational}
+                                label="Navigational?"
+                                message-toggle-active="Enabled"
+                                message-toggle-inactive="Disabled"
+                                onchange={handleNavigational}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-accordion-section>
+                <lightning-accordion-section name="listSource"  label="List Source Config">
+                    <lightning-layout multiple-rows>
+                        <lightning-layout-item size="12">
+                            <lightning-combobox
+                                class="slds-p-vertical_xx-small"
+                                name="listSource"
+                                label="List Source"
+                                value={listSource}
+                                options={listSourceOptions}
+                                onchange={handleListSource} 
+                                data-id="listSourceInput"
+                                required>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-combobox
+                                lwc:if={sourceObjectRequired}
+                                class="slds-p-vertical_xx-small"
+                                name="sourceObject"
+                                label="Source Object"
+                                value={sourceObject}
+                                options={sourceObjectOptions}
+                                onchange={handleSourceObject} 
+                                data-id="sourceObjectInput"
+                                required>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12">
+                            <lightning-combobox
+                                lwc:if={objectFieldRequired}
+                                class="slds-p-vertical_xx-small"
+                                name="objectField"
+                                label="Object Field"
+                                value={objectField}
+                                options={objectFieldOptions}
+                                onchange={handleObjectField} 
+                                data-id="objectFieldInput"
+                                required>
+                            </lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </lightning-layout-item>
+        <lightning-layout-item size="12">
+            <lightning-input 
+                class="slds-p-vertical_xx-small"
+                type="text" 
+                name="value" 
+                value={value}
+                label="Default Value" 
+                onchange={handleValue}>
+            </lightning-input>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>
