@@ -1,0 +1,135 @@
+<template>
+    <lightning-card>
+        <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+            <lightning-accordion-section name="data" label="Data Configuration">
+                <lightning-combobox
+                    name="dataSource"
+                    label="Data Source"
+                    value={selectedDataSource}
+                    placeholder="Select data source..."
+                    options={dataSourceOptions}
+                    onchange={handleSelectedDataSource}
+                    required>
+                </lightning-combobox>
+                <lightning-combobox
+                    lwc:if={showSObjectConfiguration}
+                    name="objectType"
+                    label="Object Type"
+                    value={selectedObject}
+                    placeholder="Select object..."
+                    options={objectTypeOptions}
+                    onchange={handleSelectedObjectType}
+                    disabled={disableObjectTypeOptions}
+                    required>
+                </lightning-combobox>
+                <lightning-combobox
+                    lwc:if={showPicklistFieldOptions}
+                    name="picklistField"
+                    label="Picklist Field"
+                    value={selectedPicklistField}
+                    placeholder="Select Picklist Field..."
+                    options={picklistFieldOptions}
+                    onchange={handleSelectPicklistField}
+                    disabled={disablePicklistFieldOptions}
+                    required>
+                </lightning-combobox>
+            </lightning-accordion-section>
+            <lightning-accordion-section name="style" label="Style Configuration">
+                <lightning-combobox
+                    name="listStyle"
+                    label="List Style"
+                    value={selectedListStyle}
+                    placeholder="Select style..."
+                    options={listStyleOptions}
+                    onchange={handleSelectedListStyle}
+                    required>
+                </lightning-combobox>
+                <lightning-combobox
+                    lwc:if={showValueStyleOptions}
+                    name="valueStyle"
+                    label="Value Style"
+                    value={selectedValueStyle}
+                    placeholder="Select style..."
+                    options={valueStyleOptions}
+                    onchange={handleSelectedValueStyle}
+                    required>
+                </lightning-combobox>
+                <lightning-slider 
+                    label="Columns" 
+                    value={numberOfColumns} 
+                    min="1"
+                    max="3" 
+                    onchange={handleColumnSelection}>
+                </lightning-slider>
+                <lightning-input 
+                    type="toggle" 
+                    label="Enable Pagination?" 
+                    name="enblePagination" 
+                    value={paginationEnabled}
+                    message-toggle-active="Enabled" 
+                    message-toggle-inactive="Disabled"
+                    onchange={handlePaginationEnabled}>
+                </lightning-input>
+                <lightning-slider 
+                    lwc:if={showRowSelection}
+                    label="Rows" 
+                    value={numberOfRows}
+                    min="1" 
+                    max="50" 
+                    onchange={handleRowSelection}>
+                </lightning-slider>
+                <lightning-input 
+                    type="toggle" 
+                    label="Enable Search?" 
+                    name="enableSearch" 
+                    value={searchEnabled}
+                    message-toggle-active="Enabled" 
+                    message-toggle-inactive="Disabled"
+                    onchange={handleSearchEnabled}>
+                </lightning-input>
+            </lightning-accordion-section>
+            <lightning-accordion-section name="options" label="List Options">
+                <lightning-button-group>
+                    <lightning-button label="Add Option" onclick={handleAddOption} disabled={disableAddOption}></lightning-button>
+                    <lightning-button-icon icon-name="utility:refresh" alternative-text="Reset" onclick={handleRefreshPicklistFieldValues}></lightning-button-icon>
+                </lightning-button-group>
+                <div ondragover={handleDragOver} ondrop={handleDrop}>
+                    <template for:each={picklistFieldValues} for:item="item" for:index="index">
+                        <div
+                            key={item.id}
+                            draggable="true"  
+                            ondragstart={handleDragStart} 
+                            ondragend={handleDragEnd} 
+                            data-item-id={item.id} 
+                            data-index={index}
+                            class="slds-media slds-media_center slds-media_responsive slds-box slds-m-vertical_small draggable-item">
+                            <div class="slds-media__figure">
+                                <lightning-icon
+                                    icon-name="utility:drag_and_drop"
+                                    size="x-small"
+                                    alternative-text="Drag to reorder">
+                                </lightning-icon>
+                            </div>
+                            <div class="slds-media__body">
+                                <lightning-layout multiple-rows="true">
+                                    <lightning-layout-item size="6">
+                                        <lightning-input label="Label" type="text" value={item.label} class="slds-p-around_x-small"></lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input label="Value" type="text" value={item.value} disabled={item.fixedValue} class="slds-p-around_x-small"></lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="color" name="colour" label="Colour" value={item.customColour} lwc:if={enableCustomColour}></lightning-input>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                            <div class="slds-media__figure slds-media__figure_reverse slds-text-align_right">
+                                <lightning-button-icon icon-name="utility:clear" variant="bare" alternative-text="Remove" data-id={item.id} onclick={handleRemoveOption}></lightning-button-icon>
+                            </div>
+                        </div>
+                    </template>
+                </div>     
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </lightning-card>
+</template>
