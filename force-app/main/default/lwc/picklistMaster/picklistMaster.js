@@ -9,32 +9,97 @@ const dummyOptions = [
 
 export default class PicklistMaster extends LightningElement {
 
-    @api listLabel;
-    @api listType;
-    @api listSource;
-    @api sourceObject;
-    @api objectField;
-    @api picklistValues;
-    @api multiSelect;
-    @api navigational;
-    @api options = dummyOptions;
-    @api value;
-
-    get isArrayValue() {
-        return Array.isArray(this.value);
-    }
-
-    get getListLabel() {
+    @api 
+    get listLabel() {
         return this.listLabel;
     }
-
-    get isMultiSelect() {
-        return this.multiSelect;
+    set listLabel(value) {
+        this._listLabel = value;
     }
+    _listLabel;
 
-    get getOptions() {
-        return this.options;
+    @api 
+    get listType() {
+        return this._listType;
     }
+    set listType(value) {
+        this._listType = value;
+    }
+    _listType;
+    
+    @api 
+    get listSource() {
+        return this._listSource;
+    }
+    set listSource(value) {
+        this._listSource = value;
+    }
+    _listSource;
+
+    @api 
+    get sourceObject() {
+        return this._sourceObject;
+    }
+    set sourceObject(value) {
+        this._sourceObject = value;
+    }
+    _sourceObject;
+
+    @api 
+    get objectField() {
+        return this._objectField;
+    }
+    set objectField(value) {
+        this._objectField = value;
+    }
+    _objectField;
+
+    @api 
+    get multiSelect() {
+        return this._multiSelect || false;
+    }
+    set multiSelect(value) {
+        this._multiSelect = value;
+    }
+    _multiSelect;
+
+    @api 
+    get navigational() {
+        return this._navigational || false;
+    }
+    set navigational(value) {
+        this._navigational = value;
+    }
+    _navigational;
+
+    @api 
+    get options() {
+        return dummyOptions || [];
+    }
+    set options(value) {
+        this._options = value;
+    }
+    _options;
+
+    @api 
+    get valueList() {
+        return this._valueList || [];
+    }
+    set valueList(value) {
+        this._valueList = value;
+        this.handleValueUpdate();
+    }
+    _valueList;
+
+    @api 
+    get value() {
+        return this._value;
+    }
+    set value(value) {
+        this._value = value;
+        this.handleValueUpdate();
+    }
+    _value;
 
     connectedCallback() {
         switch (this.listType) {
@@ -46,75 +111,58 @@ export default class PicklistMaster extends LightningElement {
         }
     }
 
-
     get isCheckbox() {
         return this.listType === 'checkbox';
     }
-
     get checkboxOptions() {
-        let options = [];
-        this.getOptions.forEach(option => {
-            options.push({
+        let checkboxOptions = [];
+        this.options.forEach(option => {
+            checkboxOptions.push({
                 ...option,
                 checked: this.value.includes(option.value) ? true : false
             })
         });
-        return options;
+        return checkboxOptions;
     }
-
-    get checkBoxGroupValue() {
-        return this.value == undefined ? [] : this.value;
-    }
-
     handleCheckboxGroupValue(event) {
         const selectedValues = event.detail.value;
-        this.value = selectedValues;
-        this.handleValueUpdate();
+        this.valueList(selectedValues);
     }
-    
     handleCheckboxValue(event) {
         const selectedValue = event.target.name;
-        this.value = selectedValue;
-        this.handleValueUpdate();
+        this.value(selectedValue);
     }
-
 
     get isRadio() {
         return this.listType === 'radio';
     }
-
     handleRadioValue(event) {
         const selectedValue = event.detail.value;
-        this.value = selectedValue;
-        this.handleValueUpdate();
+        this.value(selectedValue);
     }
 
     get isDropdown() {
         return this.listType === 'dropdown';
     }
-
     handleDropdownValue(event) {
         const selectedValue = event.detail.value;
-        this.value = selectedValue;
-        this.handleValueUpdate();
+        this.value(selectedValue);
     }
 
     get isButton() {
         return this.listType === 'button';
     }
-
     @track buttonOptions = [];
     updateButtonOptions() {
-        let options = [];
-        this.getOptions.forEach(option => {
-            options.push({
+        let buttonOptions = [];
+        this.options.forEach(option => {
+            buttonOptions.push({
                 ...option,
                 variant: this.checkForValue(option.value) ? 'brand' : 'neutral'
             })
         });
-        this.buttonOptions = options;
+        this.buttonOptions = buttonOptions;
     }
-
     handleButtonValue(event) {
         const selectedValue = event.target.name;
         console.log('Selected Button Value: '+selectedValue);
@@ -124,17 +172,13 @@ export default class PicklistMaster extends LightningElement {
             this.multiButtonSelection(selectedValue);
         }
         this.updateButtonOptions();
-        console.log('Value: '+this.value);
-        this.handleValueUpdate();
-        console.log('Navigate: '+this.navigational);
-        if(this.navigational) this.handleFlowNavigation();
+        if(!this.navigational) return 
+        this.handleFlowNavigation();
     }
-
     singleButtonSelection(selectedValue) {
         console.log('Single Selection');
-        this.value = this.navigational ? selectedValue : this.checkForValue(selectedValue) ? '' : selectedValue;
+        this.value(this.navigational ? selectedValue : this.checkForValue(selectedValue) ? '' : selectedValue);
     }
-
     multiButtonSelection(selectedValue) {
         console.log('Multiple Selection');
         if(this.checkForValue(selectedValue)) {
@@ -144,51 +188,35 @@ export default class PicklistMaster extends LightningElement {
         }
         console.log('Button Options: '+JSON.stringify(this.buttonOptions));
     }
-
     removeButtonValue(value) {
         console.log('Remove Value');
-        if(this.isArrayValue) {
-            this.value = this.value.length == 1 ? [] : this.value.filter(item => item !== value); 
-        } else {
-            this.value = [];
-        }
+        this.valueList(this.valueList.filter(item => item !== value)); 
     }
-
     addButtonValue(value) {
         console.log('Add Value');
-        if(this.isArrayValue) {
-            this.value.push(value);
-        } else if(this.value !== '') {
-            this.value = [this.value,value];
-        } else {
-            this.value = [value];
-        }
+        this.valueList([...this.valueList,value]);
     }
 
     checkForValue(value) {
-        if (this.isArrayValue) {
-            return this.value.includes(value);
-        } else {
-            return value === this.value;
-        }
+        return this.valueList.includes(value) || this.value == value;
     }
 
     handleValueUpdate() { 
 
-        const singleValue = this.isArrayValue ? this.value[0] : this.value;
-        const singleValueChange = new FlowAttributeChangeEvent(
-            'singleValue',
-            singleValue
+        const value = this.value ?? this.valueList[0] ?? '';
+        const valueChange = new FlowAttributeChangeEvent(
+            'value',
+            value
         );
 
-        const multiValue = this.isArrayValue ? this.value : [this.value];
-        const multiValueChange = new FlowAttributeChangeEvent(
-            'multiValue',
-            multiValue
+        const valueList = this.valueList ?? [this.value] ?? [];
+        const valueListChange = new FlowAttributeChangeEvent(
+            'valueList',
+            valueList
         );
 
-        this.dispatchEvent(singleValueChange);
-        this.dispatchEvent(multiValueChange);
+        this.dispatchEvent(valueChange);
+        this.dispatchEvent(valueListChange);
     }
 
     @api

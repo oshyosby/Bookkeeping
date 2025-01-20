@@ -126,8 +126,26 @@ public with sharing class PicklistMaster {
 
         return picklistValuesInfoList;   
     }
-    
-    public PicklistMaster() {
 
+    public class PicklistOption {
+        @AuraEnabled
+        public String id;
+        @AuraEnabled
+        public String label;
+        @AuraEnabled
+        public String value;
+        @AuraEnabled
+        public Boolean editing;
+        @AuraEnabled
+        public Boolean updated;  
+        @AuraEnabled
+        public Boolean fixedValue;   
     }
+
+    public class PicklistOptions {
+        @AuraEnabled
+        public List<PicklistOption> collection;  
+    }
+
+    @AuraEnabled public PicklistOptions options;
 }

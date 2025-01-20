@@ -21,10 +21,13 @@
             <property name="listSource" type="String" role="inputOnly"/>
             <property name="sourceObject" type="String" role="inputOnly"/>
             <property name="objectField" type="String" role="inputOnly"/>
-            <property name="picklistValues" type="String" role="inputOnly"/>
             <property name="multiSelect" type="Boolean" default="false" role="inputOnly"/>
             <property name="navigational" type="Boolean" default="false" role="inputOnly"/>
+            
+            <property name="options" type="apex://PicklistMaster" label="Options"/>
+
             <property name="value" type="String"/>
+			<property name="valueList" type="String" label="List Value"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

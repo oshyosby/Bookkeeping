@@ -6,6 +6,11 @@ import { inputTypeMap, multiSelectTypes, dataTypes, listDataSource, picklistType
 
 export default class PicklistMasterEditor extends LightningElement {
 
+    renderedCallback() {
+        this._sourceObject = this.sourceObject;
+        this._objectField = this.objectField;
+    }
+
     get activeSections() {
         return ['listType','listSource'];
     }
@@ -29,9 +34,15 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "listLabel");
         return param && param.value;
     }
+    set listLabel(value) {
+        this._listLabel = value;
+        this.handleChange("listLabel",this._listLabel);
+
+    }
+    _listLabel;
     handleListLabel(event) {
         const newValue = event.target.value;
-        this.handleChange("listLabel",newValue);
+        this.listLabel = newValue;
     }
 
     get listTypeOptions() {
@@ -41,12 +52,17 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "listType");
         return param && param.value;
     }
+    set listType(value) {
+        this._listType = value;
+        this.handleChange("listType",this._listType);
+    }
+    _listType;
     handleListType(event) {
         const newValue = event.target.value;
         if(!multiSelectTypes.includes(newValue)) {
-            this.handleChange('multiSelect',false);
+            this.multiSelect = false;
         }
-        this.handleChange("listType",newValue);
+        this.listType = newValue;
     }
 
     get listSourceOptions() {
@@ -56,10 +72,15 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "listSource");
         return param && param.value;
     }
+    set listSource(value) {
+        this._listSource = value;
+        this.handleChange("listSource",this._listSource);
+        this.sourceObject = "";
+    }
+    _listSource;
     handleListSource(event) {
         const newValue = event.target.value;
-        this.handleChange("listSource",newValue);
-        this.handleChange("sourceObject","");
+        this.listSource = newValue;
     }
 
     get sourceObjectOptions() {
@@ -88,12 +109,16 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "sourceObject");
         return param && param.value;
     }
+    set sourceObject(value) {
+        this._sourceObject = value;
+        this.handleChange("sourceObject",this._sourceObject);
+        this.objectField = "";
+    }
+
     @track _sourceObject;
     handleSourceObject(event) {
         const newValue = event.target.value;
-        this._sourceObject = newValue;
-        this.handleChange("sourceObject",newValue);
-        this.handleChange("objectField","");
+        this.sourceObject - newValue;
     }
 
     get objectFieldOptions() {
@@ -122,18 +147,17 @@ export default class PicklistMasterEditor extends LightningElement {
         const param = this.inputVariables.find(({ name }) => name === "objectField");
         return param && param.value;
     }
+    set objectField(value) {
+        this._objectField = value;
+        this.handleChange("objectField",this._objectField);
+    }
     @track _objectField;
     handleObjectField(event) {
         const newValue = event.target.value;
-        this._objectField = newValue;
-        this.handleChange("objectField",newValue);
+        this.objectField = newValue;
     }
 
-    get picklistValueOptions() {
-        return this._picklistValues;
-    }
-    _picklistValues;
-    _objectFieldValues;
+    _defaultOptions;
     @wire(GetPicklistValues, {sourceObject: '$_sourceObject', picklistField: '$_objectField'})
     wiredGetPicklistValues({error, data}) {
         if(data) {
@@ -148,18 +172,26 @@ export default class PicklistMasterEditor extends LightningElement {
                     fixedValue: true
                 };
             });
-            this._objectFieldValues = formattedData;
-            this._picklistValues = formattedData;
-            console.log(this._picklistValues);
+            this._defaultOptions = formattedData;
+            if(this._options !== undefined) return;
+            this.options = this._defaultOptions;
             
         } else if(error) {
             console.log('Get Picklist Values Error: '+JSON.stringify(error));
         }
     }
-    get picklistValues() {
-        const param = this.inputVariables.find(({ name }) => name === "picklistValues");
+    get listOptions() {
+        return this._options || this.options;
+    }
+    get options() {
+        const param = this.inputVariables.find(({ name }) => name === "options");
         return param && param.value;
     }
+    set options(value) {
+        this._options = value;
+        //this.handleChange("options",this._options);
+    }
+    _options;
     handleOptionAction(event) {
         const selectedAction = event.detail.value;
         const optionId = event.currentTarget.dataset.id;
@@ -177,22 +209,21 @@ export default class PicklistMasterEditor extends LightningElement {
         }
     }
     handleEditOption(optionId) {
-        const optionToUpdate = this._picklistValues.filter(option => option.id == optionId);
+        const optionToUpdate = this._options.filter(option => option.id == optionId);
         if(optionToUpdate === undefined) return;
         optionToUpdate.editing = true;
-        //this.handleValueOptions(this._picklistValues) 
     }
     handleRemoveOption(optionId) {
-        const optionToRemove = this._picklistValues.filter(option => option.id == optionId);
+        const optionToRemove = this._options.filter(option => option.id == optionId);
         if(optionToRemove == undefined) return;
-        const updatedValues = this._picklistValues.filter(option => option.id !== optionId);
-        this.handleValueOptions(updatedValues) 
+        const updatedValues = this._options.filter(option => option.id !== optionId);
+        this.options = updatedValues; 
     }
 
     handleAddOption(event) {
         const optionId = '';
-        if(this._picklistValues === undefined) this._picklistValues = [];
-        this._picklistValues.push({ 
+        if(this._options === undefined) this._options = [];
+        this._options.push({ 
             id: optionId, 
             label: '', 
             value: '', 
@@ -200,28 +231,28 @@ export default class PicklistMasterEditor extends LightningElement {
             updated: false,
             fixedValue: false 
         });
-        //this.handleValueOptions(this._picklistValues) 
     }
     handleResetOptions(event) {
-        const newValues = this._objectFieldValues ?? [];
-        this.handleValueOptions(newValues);
-    }
-    handleValueOptions(newValues) {
-        this._picklistValues = newValues
-        this.handleChange("picklistValues",JSON.stringify(this._picklistValues));
+        const newValues = this._defaultOptions ?? [];
+        this.options = newValues;
     }
 
     get multiSelect() {
         const param = this.inputVariables.find(({ name }) => name === "multiSelect");
         if(param === undefined) return false;
         return param && param.value;
-    } 
+    }
+    set multiSelect(value) {
+        this._multiSelect = value;
+        this.handleChange("multiSelect",this._multiSelect);
+    }
+    _multiSelect; 
     get multiSelectEnabled() {
         return multiSelectTypes.includes(this.listType) && this.navigational == false;
     }  
     handleMultiSelect(event) {
         const newValue = !this.multiSelect;
-        this.handleChange("multiSelect",newValue);
+        this.multiSelect = newValue;
     }
     
     get navigational() {
@@ -229,21 +260,25 @@ export default class PicklistMasterEditor extends LightningElement {
         if(param === undefined) return false;
         return param && param.value;
     }
+    set navigational(value) {
+        this._navigational = value;
+        this.handleChange("navigational",this._navigational);
+    }
     get navigationEnabled() {
         return this.listType === 'button' && this.multiSelect == false;
     }
     handleNavigational(event) {
         const newValue = !this.navigational;
-        this.handleChange("navigational",newValue);
+        this.navigational = newValue;
     }
 
     get value() {
         const param = this.inputVariables.find(({ name }) => name === "value");
         return param && param.value;
     }
-    handleValue(event) {
-        const newValue = event.target.value;
-        this.handleChange("value",newValue);
+    set value(value) {
+        this._value = value;
+        this.handleChange("value",this._value);
     }
 
     handleChange(property,value) {
@@ -398,7 +433,7 @@ export default class PicklistMasterEditor extends LightningElement {
         const dropIndex = parseInt(event.target.closest('[data-item-id]').dataset.index, 10);
         
         if (this.draggedIndex !== null && dropIndex !== this.draggedIndex) {
-            const newItems = [...this._picklistValues];
+            const newItems = [...this._options];
             const [movedItem] = newItems.splice(this.draggedIndex, 1);
             newItems.splice(dropIndex, 0, movedItem);
 

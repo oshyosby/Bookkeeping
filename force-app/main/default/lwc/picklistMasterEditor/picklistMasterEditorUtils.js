@@ -6,7 +6,9 @@ const inputTypeMap = {
     objectField: 'String',
     multiSelect: 'Boolean',
     navigational: 'Boolean',
-    value: 'String'
+    options: 'apex://PicklistMaster', // To Do
+    value: 'String',
+    valueList: 'String', // To Do
 }
 
 const multiSelectTypes = ['checkbox','button'];
