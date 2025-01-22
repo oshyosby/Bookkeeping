@@ -61,7 +61,7 @@
             <assignToReference>ledgerLine.Transaction_Id__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>journal.Transaction_Id__c</elementReference>
+                <elementReference>transactionId</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -94,6 +94,11 @@
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <name>transactionId</name>
+        <dataType>String</dataType>
+        <expression>IF(ISNULL({!journal.Transaction_Id__c}),{!journal.Id},{!journal.Transaction_Id__c})</expression>
+    </formulas>
     <interviewLabel>Bookkeeping - Create Unallocated Transaction {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Bookkeeping - Create Unallocated Transaction</label>
     <processMetadataValues>
