@@ -3,12 +3,13 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>Date__c</columns>
-    <columns>Journal_Id__c</columns>
+    <columns>Transaction_Id__c</columns>
     <columns>Type__c</columns>
+    <columns>Sub_Type__c</columns>
     <columns>Reference__c</columns>
-    <columns>IsReconciled__c</columns>
     <columns>Credit__c</columns>
     <columns>Debit__c</columns>
+    <columns>IsAllocated__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

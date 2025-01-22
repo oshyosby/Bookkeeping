@@ -7,7 +7,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Journal_Id__c</fieldItem>
+                <fieldItem>Record.Transaction_Id__c</fieldItem>
                 <identifier>RecordJournal_Id_cField</identifier>
             </fieldInstance>
         </itemInstances>
@@ -85,7 +85,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.IsReconciled__c</fieldItem>
+                <fieldItem>Record.IsAllocated__c</fieldItem>
                 <identifier>RecordIsReconciled_cField</identifier>
             </fieldInstance>
         </itemInstances>
@@ -95,6 +95,21 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentInstanceProperties>
+                    <name>actionNames</name>
+                    <valueList>
+                        <valueListItems>
+                            <value>Journal__c.Complete_Journal</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.IsAllocated__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>false</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                    </valueList>
+                </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>numVisibleActions</name>
                     <value>3</value>
