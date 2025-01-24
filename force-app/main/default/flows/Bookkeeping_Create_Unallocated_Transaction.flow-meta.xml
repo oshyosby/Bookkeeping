@@ -97,7 +97,7 @@
     <formulas>
         <name>transactionId</name>
         <dataType>String</dataType>
-        <expression>IF(ISNULL({!journal.Transaction_Id__c}),{!journal.Id},{!journal.Transaction_Id__c})</expression>
+        <expression>IF(ISBLANK({!journal.Transaction_Id__c}),{!journal.Id},{!journal.Transaction_Id__c})</expression>
     </formulas>
     <interviewLabel>Bookkeeping - Create Unallocated Transaction {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Bookkeeping - Create Unallocated Transaction</label>

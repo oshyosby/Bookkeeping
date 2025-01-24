@@ -10,65 +10,127 @@ public without sharing class LedgerLineHandler extends TriggerHandlerUtilities  
         validateRecords((List<Ledger_Line__c>)n,(Map<Id,Ledger_Line__c>)oMap);
     }
 
+    public override void afterDelete(List<SObject> o, Map<Id, SObject> oMap, List<SObject> n, Map<Id, SObject> nMap, Schema.SObjectType sot, Boolean debug)
+    {
+        validateRecords(new List<Ledger_Line__c>(),(Map<Id,Ledger_Line__c>)oMap);
+    }
 
     private static void validateRecords(List<Ledger_Line__c> newLines, Map<Id,Ledger_Line__c> oldLines) {
 
-        List<Ledger_Line__c> validLines = new List<Ledger_Line__c>();
-        Map<Id,Decimal> lineAdjustmentMap = new Map<Id,Decimal>();
+        Map<String,Map<Id,Map<String,Decimal>>> ledgerLineMap = new Map<String,Map<Id,Map<String,Decimal>>>();
 
-        for(Ledger_Line__c line : newLines) {
-            if(!oldLines.containsKey(line.Id)) {
-                validLines.add(line);
-                continue;
+        if(!newLines.isEmpty()) {
+            for(Ledger_Line__c line : newLines) {
+                if(!oldLines.containsKey(line.Id)) {
+                    ledgerLineMap = HandleAdjustment(ledgerLineMap,'Ledger',line.Ledger__c,line.Credit_Debit__c,line.Amount__c);
+                    ledgerLineMap = HandleAdjustment(ledgerLineMap,'Journal',line.Journal__c,line.Credit_Debit__c,line.Amount__c);
+                    continue;
+                }
+    
+                if(oldLines.get(line.Id).Amount__c == line.Amount__c) continue;
+                Decimal adjustmentAmount = line.Amount__c - oldLines.get(line.Id).Amount__c;
+                ledgerLineMap = HandleAdjustment(ledgerLineMap,'Ledger',line.Ledger__c,line.Credit_Debit__c,adjustmentAmount);
+                ledgerLineMap = HandleAdjustment(ledgerLineMap,'Journal',line.Journal__c,line.Credit_Debit__c,adjustmentAmount);
             }
+        } else {
+            if(oldLines.isEmpty()) return;
+            for(Ledger_Line__c line : oldLines.values()) {
+                Decimal adjustmentAmount = 0 - line.Amount__c;
+                ledgerLineMap = HandleAdjustment(ledgerLineMap,'Ledger',line.Ledger__c,line.Credit_Debit__c,adjustmentAmount);
+                ledgerLineMap = HandleAdjustment(ledgerLineMap,'Journal',line.Journal__c,line.Credit_Debit__c,adjustmentAmount);
+            }
+        } 
 
-            if(oldLines.get(line.Id).Amount__c == line.Amount__c) continue;
-            validLines.add(line);
-            lineAdjustmentMap.put(line.Id,line.Amount__c - oldLines.get(line.Id).Amount__c);
-        }
+        if(ledgerLineMap.isEmpty()) return;
 
-        if(validLines.isEmpty()) return;
-
-        UpdateCalculations(validLines,lineAdjustmentMap);
+        HandleCalculations(ledgerLineMap);
     }
 
-    private static void UpdateCalculations(List<Ledger_Line__c> newLines, Map<Id,Decimal> lineAdjustmentMap) {
+    public static Map<String,Map<Id,Map<String,Decimal>>> HandleAdjustment(Map<String,Map<Id,Map<String,Decimal>>> ledgerLineMap, String parentType, Id parentId, String creditDebit, Decimal amount) {
         
-        Map<String,Set<Id>> parentIdMap = new Map<String,Set<Id>>{
-            'Ledger' => new Set<Id>(),
-            'Journal' => new Set<Id>()
-        };
-        for(Ledger_Line__c line : newLines) {
-            parentIdMap.get('Ledger').add(line.Ledger__c);
-            parentIdMap.get('Journal').add(line.Journal__c);
+        if(!ledgerLineMap.containsKey(parentType)) {
+            ledgerLineMap.put(parentType,new Map<Id,Map<String,Decimal>>());
         }
 
-        Map<Id,Ledger__c> ledgerMap = new Map<Id,Ledger__c>([
-            SELECT Id, Credit__c, Debit__c FROM Ledger__c WHERE Id IN :parentIdMap.get('Ledger')
-        ]);
-        Map<Id,Journal__c> journalMap = new Map<Id,Journal__c>([
-            SELECT Id, Credit__c, Debit__c FROM Journal__c WHERE Id IN :parentIdMap.get('Journal')
-        ]);
+        if(!ledgerLineMap.get(parentType).containsKey(parentId)) {
+            ledgerLineMap.get(parentType).put(parentId,new Map<String,Decimal>());
+        }
+        
+        if(!ledgerLineMap.get(parentType).get(parentId).containsKey(creditDebit)) {
+            ledgerLineMap.get(parentType).get(parentId).put(creditDebit,0.00);
+        }
+        Decimal adjustmentTotal = ledgerLineMap.get(parentType).get(parentId).get(creditDebit) + amount;
+        ledgerLineMap.get(parentType).get(parentId).put(creditDebit,adjustmentTotal);
 
-        for(Ledger_Line__c line : newLines) {
-            Ledger__c ledger = ledgerMap.get(line.Ledger__c);
-            Journal__c journal = journalMap.get(line.Journal__c);
+        return ledgerLineMap;
+    }
 
-            Decimal value = lineAdjustmentMap.containsKey(line.Id) ? lineAdjustmentMap.get(line.Id) : line.Amount__c;
-
-            if(line.Credit_Debit__c == 'Credit') {
-                ledger.Credit__c += value;
-                journal.Credit__c += value;
-            } else {
-                ledger.Debit__c += value;
-                journal.Debit__c += value;
+    public static void HandleCalculations(Map<String,Map<Id,Map<String,Decimal>>> ledgerLineMap) {
+        
+        List<Ledger__c> ledgers = new List<Ledger__c>();
+        List<Journal__c> journals = new List<Journal__c>();
+        for(String parentType : ledgerLineMap.keySet()) {
+            switch on parentType {
+                when 'Ledger' {
+                    ledgers = HandleLedgerUpdate(ledgerLineMap.get(parentType));
+                }
+                when 'Journal' {
+                    journals = HandleJournalUpdate(ledgerLineMap.get(parentType));
+                }
+                when else {
+                    throw new AuraHandledException('Missing Credit / Debit Value');
+                }
             }
-
-            ledgerMap.put(ledger.Id,ledger);
-            journalMap.put(journal.Id,journal);
         }
+        if(ledgers.size() > 0) {
+            update ledgers;
+        }
+        if(journals.size() > 0) {
+            update journals;
+        }
+    }
 
-        update new List<Ledger__c>(ledgerMap.values());
-        update new List<Journal__c>(journalMap.values());
+    private static List<Ledger__c> HandleLedgerUpdate(Map<Id,Map<String,Decimal>> parentMap) {
+        List<Ledger__c> ledgers = new List<Ledger__c>();
+        for(Ledger__c ledger : [SELECT Id, Credit__c, Debit__c FROM Ledger__c WHERE Id IN: parentMap.keySet()]) {
+            Map<String,Decimal> adjustmentMap = parentMap.get(ledger.Id);
+            for(String adjustment : adjustmentMap.keySet()) {
+                switch on adjustment {
+                    when 'Credit' {
+                        ledger.Credit__c += adjustmentMap.get(adjustment);
+                    }
+                    when 'Debit' {
+                        ledger.Debit__c += adjustmentMap.get(adjustment);
+                    }
+                    when else {
+                        throw new AuraHandledException('Missing Credit / Debit Value');
+                    }
+                }
+            }
+            ledgers.add(ledger);
+        }
+        return ledgers;
+    }
+
+    private static List<Journal__c> HandleJournalUpdate(Map<Id,Map<String,Decimal>> parentMap) {
+        List<Journal__c> journals = new List<Journal__c>();
+        for(Journal__c journal : [SELECT Id, Credit__c, Debit__c FROM Journal__c WHERE Id IN: parentMap.keySet()]) {
+            Map<String,Decimal> adjustmentMap = parentMap.get(journal.Id);
+            for(String adjustment : adjustmentMap.keySet()) {
+                switch on adjustment {
+                    when 'Credit' {
+                        journal.Credit__c += adjustmentMap.get(adjustment);
+                    }
+                    when 'Debit' {
+                        journal.Debit__c += adjustmentMap.get(adjustment);
+                    }
+                    when else {
+                        throw new AuraHandledException('Missing Credit / Debit Value');
+                    }
+                }
+            }
+            journals.add(journal);
+        }
+        return journals;
     }
 }
