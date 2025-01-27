@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Forecast__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(Sub_Type__c,
+&apos;Bank&apos;, &apos;Current&apos;,
+&apos;Cash&apos;, &apos;Current&apos;,
+&apos;Pension&apos;, &apos;Future&apos;,
+&apos;Credit&apos;, &apos;Current&apos;,
+&apos;Balance&apos;, &apos;Current&apos;,
+&apos;Position&apos;, &apos;Current&apos;,
+&apos;Receivable&apos;, &apos;Current&apos;,
+&apos;Payable&apos;, &apos;Current&apos;,
+CASE(Term__c,
+&apos;Short&apos;, &apos;Current&apos;,
+&apos;Long&apos;, &apos;Future&apos;,
+&apos;&apos;))</formula>
+    <label>Forecast</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
