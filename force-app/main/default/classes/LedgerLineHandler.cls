@@ -32,6 +32,8 @@ public without sharing class LedgerLineHandler extends TriggerHandlerUtilities  
         UpdateCalculations(validLines,lineAdjustmentMap);
     }
 
+
+    // TO DO - Create Sub class to Calculate the balances for Parent record based on Map input. To be used by journal & ledger handlers
     private static void UpdateCalculations(List<Ledger_Line__c> newLines, Map<Id,Decimal> lineAdjustmentMap) {
         
         Map<String,Set<Id>> parentIdMap = new Map<String,Set<Id>>{
