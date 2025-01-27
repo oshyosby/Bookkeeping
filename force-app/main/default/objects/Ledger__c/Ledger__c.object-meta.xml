@@ -159,7 +159,15 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Ledgers</pluralLabel>
-    <searchLayouts></searchLayouts>
+    <searchLayouts>
+        <excludedStandardButtons>OpenListInQuip</excludedStandardButtons>
+        <excludedStandardButtons>NewFromDocument</excludedStandardButtons>
+        <excludedStandardButtons>Accept</excludedStandardButtons>
+        <excludedStandardButtons>ChangeOwner</excludedStandardButtons>
+        <excludedStandardButtons>MassChangeOwner</excludedStandardButtons>
+        <excludedStandardButtons>PrintableListView</excludedStandardButtons>
+        <excludedStandardButtons>MassAssignRecordLabel</excludedStandardButtons>
+    </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>

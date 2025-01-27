@@ -6,19 +6,130 @@
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
+        <controllingField>Type__c</controllingField>
         <restricted>true</restricted>
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
+                <fullName>Bank</fullName>
+                <default>false</default>
+                <label>Bank</label>
+            </value>
+            <value>
+                <fullName>Cash</fullName>
+                <default>false</default>
+                <label>Cash</label>
+            </value>
+            <value>
+                <fullName>Investment</fullName>
+                <default>false</default>
+                <label>Investment</label>
+            </value>
+            <value>
+                <fullName>Pension</fullName>
+                <default>false</default>
+                <label>Pension</label>
+            </value>
+            <value>
+                <fullName>Savings</fullName>
+                <default>false</default>
+                <label>Savings</label>
+            </value>
+            <value>
+                <fullName>Credit</fullName>
+                <default>false</default>
+                <label>Credit</label>
+            </value>
+            <value>
+                <fullName>Debt</fullName>
+                <default>false</default>
+                <label>Debt</label>
+            </value>
+            <value>
+                <fullName>Loan</fullName>
+                <default>false</default>
+                <label>Loan</label>
+            </value>
+            <value>
+                <fullName>Balance</fullName>
+                <default>false</default>
+                <label>Balance</label>
+            </value>
+            <value>
+                <fullName>Position</fullName>
+                <default>false</default>
+                <label>Position</label>
+            </value>
+            <value>
+                <fullName>Receivable</fullName>
+                <default>false</default>
+                <label>Receivable</label>
+            </value>
+            <value>
+                <fullName>Payable</fullName>
+                <default>false</default>
+                <label>Payable</label>
+            </value>
+            <value>
                 <fullName>Current</fullName>
-                <default>true</default>
+                <default>false</default>
+                <isActive>false</isActive>
                 <label>Current</label>
             </value>
             <value>
                 <fullName>Future</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Future</label>
             </value>
         </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Asset</controllingFieldValue>
+            <valueName>Bank</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset</controllingFieldValue>
+            <valueName>Cash</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset</controllingFieldValue>
+            <valueName>Investment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset</controllingFieldValue>
+            <valueName>Pension</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset</controllingFieldValue>
+            <valueName>Savings</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Liability</controllingFieldValue>
+            <valueName>Credit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Liability</controllingFieldValue>
+            <valueName>Debt</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Liability</controllingFieldValue>
+            <valueName>Loan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Equity</controllingFieldValue>
+            <valueName>Balance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Equity</controllingFieldValue>
+            <valueName>Position</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Income</controllingFieldValue>
+            <valueName>Receivable</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Expense</controllingFieldValue>
+            <valueName>Payable</valueName>
+        </valueSettings>
     </valueSet>
 </CustomField>
