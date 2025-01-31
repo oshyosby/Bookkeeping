@@ -5,6 +5,10 @@
         <type>CustomApplication</type>
     </appMenuItems>
     <appMenuItems>
+        <name>Bookkeeping_Setup</name>
+        <type>CustomApplication</type>
+    </appMenuItems>
+    <appMenuItems>
         <name>standard__Platform</name>
         <type>CustomApplication</type>
     </appMenuItems>

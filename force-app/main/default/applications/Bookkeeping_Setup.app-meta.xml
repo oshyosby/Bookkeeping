@@ -72,12 +72,14 @@
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
     <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
     <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
-    <label>Bookkeeping</label>
+    <label>Bookkeeping Setup</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>
-    <tabs>Ledgers</tabs>
-    <tabs>Journals</tabs>
-    <tabs>Ledger_Lines</tabs>
+    <tabs>Ledger__c</tabs>
+    <tabs>Journal__c</tabs>
+    <tabs>Ledger_Line__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-dashboard</tabs>
     <uiType>Lightning</uiType>
-    <utilityBar>Bookkeeping_UtilityBar</utilityBar>
+    <utilityBar>Bookkeeping_Setup_UtilityBar</utilityBar>
 </CustomApplication>
