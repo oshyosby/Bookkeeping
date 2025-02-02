@@ -1,0 +1,13 @@
+.options-container {
+    height:22.5rem;
+    width:100%
+}
+
+.account-option {
+    border: 2px solid var(--slds-g-color-neutral-base-80);
+}
+
+.account-option:hover {
+    border: 2px solid var(--lwc-brandAccessible);
+    cursor: pointer;
+}

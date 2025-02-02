@@ -1,0 +1,56 @@
+<template>
+    <lightning-card>
+        <h3 slot="title">
+            {summaryTitle}
+        </h3>
+        <lightning-button-group slot="actions" lwc:if={masterSummary}>
+            <lightning-button-icon icon-name="utility:add" variant="border-filled" alternative-text="Add" onclick={handleAddLedger}></lightning-button-icon>
+            <lightning-button-icon icon-name="utility:refresh" variant="border-filled" alternative-text="Refresh" onclick={handleRefreshSummary}></lightning-button-icon>
+        </lightning-button-group>
+        <div lwc:if={hasError} class="slds-m-around_x-small slds-theme_error slds-box slds-box_small">
+            {errorMessage}
+        </div>
+        <div lwc:elseif={masterSummary} class="slds-m-around_small">
+            <lightning-tabset>
+                <template for:each={masterSummaryDetails} for:item="master">
+                    <lightning-tab key={master.name} label={master.label}>
+                        <template for:each={master.GetSummaries} for:item="summary">
+                            <div key={summary.name} class="slds-box slds-box_small slds-grid slds-gutters slds-m-around_x-small">
+                                <div class="slds-col slds-size_6-of-12">
+                                    <span>{summary.type}</span>
+                                </div>
+                                <div class="slds-col slds-size_6-of-12 slds-text-align_right">
+                                    <span>
+                                        <lightning-formatted-number 
+                                            format-style="currency" 
+                                            currency-code={currencyCode} 
+                                            value={summary.GetBalance}>
+                                        </lightning-formatted-number>
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                    </lightning-tab>
+                </template>
+            </lightning-tabset>
+        </div>
+        <lightning-layout multiple-rows lwc:else>
+            <lightning-layout-item size="3">
+                <span>Ledger Count: </span>
+                <lightning-formatted-number maximum-fraction-digits="0" value={summaryDetails.count}></lightning-formatted-number>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <span>Total Credit: </span>
+                <lightning-formatted-number format-style="currency" currency-code={currencyCode} value={summaryDetails.totalCredit}></lightning-formatted-number>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <span>Total Debit: </span>
+                <lightning-formatted-number format-style="currency" currency-code={currencyCode} value={summaryDetails.totalDebit}></lightning-formatted-number>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <span>Overall Balance: </span>
+                <lightning-formatted-number format-style="currency" currency-code={currencyCode} value={summaryDetails.GetBalance}></lightning-formatted-number>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>

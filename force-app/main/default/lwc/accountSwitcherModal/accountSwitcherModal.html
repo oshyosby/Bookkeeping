@@ -1,0 +1,29 @@
+<template>
+    <lightning-modal-header label={modalTitle}>
+        <lightning-input
+                name="account-search"
+                onchange={handleAccountSearch}
+                label="Search for Account"
+                class="slds-m-around_small"
+                type="search">
+            </lightning-input>
+    </lightning-modal-header>
+    <lightning-modal-body>
+        <div lwc:if={hasError} class="slds-box slds-theme_error slds-m-around_small">
+            {errorMessage}
+        </div>
+        <div lwc:else>
+            <div class="slds-scrollable_y options-container" tabindex="0">
+                <template for:each={accountOptions} for:item="account">
+                    <div 
+                        key={account.Id} 
+                        data-id={account.Id}
+                        class="slds-box slds-m-around_small slds-text-align_center account-option"
+                        onclick={handleSelectAccount}>
+                        {account.Name}
+                    </div>
+                </template>
+            </div>
+        </div>
+    </lightning-modal-body>
+</template>

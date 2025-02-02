@@ -5,7 +5,7 @@
         <name>Prepare_Journal</name>
         <label>Prepare Journal</label>
         <locationX>50</locationX>
-        <locationY>674</locationY>
+        <locationY>782</locationY>
         <assignmentItems>
             <assignToReference>journal.Date__c</assignToReference>
             <operator>Assign</operator>
@@ -42,7 +42,7 @@
         <name>Prepare_Line_for_Balance_Ledger</name>
         <label>Prepare Line for Balance Ledger</label>
         <locationX>50</locationX>
-        <locationY>1106</locationY>
+        <locationY>1214</locationY>
         <assignmentItems>
             <assignToReference>ledgerLine.Ledger__c</assignToReference>
             <operator>Assign</operator>
@@ -79,7 +79,7 @@
         <name>Prepare_Line_for_New_Ledger</name>
         <label>Prepare Line for New Ledger</label>
         <locationX>50</locationX>
-        <locationY>890</locationY>
+        <locationY>998</locationY>
         <assignmentItems>
             <assignToReference>ledgerLine.Journal__c</assignToReference>
             <operator>Assign</operator>
@@ -141,10 +141,33 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Set_Finance_Account_Id</name>
+        <label>Set Finance Account Id</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <assignmentItems>
+            <assignToReference>ledger.Finance_Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>journal.Finance_Account__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Ledger_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Set_Ledger_Id</name>
         <label>Set Ledger Id</label>
         <locationX>182</locationX>
-        <locationY>350</locationY>
+        <locationY>458</locationY>
         <assignmentItems>
             <assignToReference>ledger.Ledger_Id__c</assignToReference>
             <operator>Assign</operator>
@@ -176,7 +199,7 @@
         <name>Create_Another_Ledger_Decision</name>
         <label>Create Another Ledger?</label>
         <locationX>182</locationX>
-        <locationY>1514</locationY>
+        <locationY>1622</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>Yes_Create_Another_Ledger</name>
@@ -199,7 +222,7 @@
         <name>Create_Opening_Balance_Journal_Decision</name>
         <label>Create Opening Balance Journal?</label>
         <locationX>182</locationX>
-        <locationY>566</locationY>
+        <locationY>674</locationY>
         <defaultConnector>
             <targetReference>Ledger_Result_Screen</targetReference>
         </defaultConnector>
@@ -231,8 +254,8 @@
         <dataType>String</dataType>
         <expression>IF({!Balance_Type}=&apos;Credit&apos;,&apos;Debit&apos;,&apos;Credit&apos;)</expression>
     </formulas>
-    <interviewLabel>Bookkeeping - Create Ledger {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Bookkeeping - Create Ledger</label>
+    <interviewLabel>Finance Account - Create Ledger {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Finance Account - Create Ledger</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -256,7 +279,7 @@
         <name>Create_Journal</name>
         <label>Create Journal</label>
         <locationX>50</locationX>
-        <locationY>782</locationY>
+        <locationY>890</locationY>
         <connector>
             <targetReference>Prepare_Line_for_New_Ledger</targetReference>
         </connector>
@@ -266,7 +289,7 @@
         <name>Create_Ledger</name>
         <label>Create Ledger</label>
         <locationX>182</locationX>
-        <locationY>458</locationY>
+        <locationY>566</locationY>
         <connector>
             <targetReference>Create_Opening_Balance_Journal_Decision</targetReference>
         </connector>
@@ -276,7 +299,7 @@
         <name>Create_Ledger_Lines</name>
         <label>Create Ledger Lines</label>
         <locationX>50</locationX>
-        <locationY>1214</locationY>
+        <locationY>1322</locationY>
         <connector>
             <targetReference>Ledger_Result_Screen</targetReference>
         </connector>
@@ -286,7 +309,7 @@
         <name>Get_Ledger_Type_Configuration</name>
         <label>Get Ledger Type Configuration</label>
         <locationX>182</locationX>
-        <locationY>242</locationY>
+        <locationY>350</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Set_Ledger_Id</targetReference>
@@ -307,7 +330,7 @@
         <name>Temp_Get_Opening_Balance_Ledger</name>
         <label>Temp: Get Opening Balance Ledger</label>
         <locationX>50</locationX>
-        <locationY>998</locationY>
+        <locationY>1106</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Prepare_Line_for_Balance_Ledger</targetReference>
@@ -342,7 +365,7 @@
         <name>Ledger_Result_Screen</name>
         <label>Ledger Result Screen</label>
         <locationX>182</locationX>
-        <locationY>1406</locationY>
+        <locationY>1514</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -460,7 +483,7 @@
         <name>Ledger_Screen</name>
         <label>Ledger Screen</label>
         <locationX>182</locationX>
-        <locationY>134</locationY>
+        <locationY>242</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -603,7 +626,7 @@
         <locationX>56</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Ledger_Screen</targetReference>
+            <targetReference>Set_Finance_Account_Id</targetReference>
         </connector>
     </start>
     <status>Active</status>
@@ -638,5 +661,12 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Ledger_Line__c</objectType>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>
