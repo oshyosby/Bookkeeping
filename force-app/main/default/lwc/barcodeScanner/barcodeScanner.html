@@ -1,0 +1,37 @@
+<!-- <template>
+    <div>
+        <h3>{errorMessage}</h3>
+        <lightning-button label="Scan QR Code" onclick={openScanner}></lightning-button>
+    </div>
+    {errorMessage}
+    {hasError}
+    {scanAgain}
+    {guid}
+</template> -->
+<!-- <template>
+    <div class="slds-card">
+        <div class="slds-align_absolute-center slds-p-top_medium">
+            <lightning-button stretch="true" variant="brand" label="Begin Scan" title="Scan" icon-name="utility:scan" icon-position="right"
+                onclick={beginScanning} class="slds-size_4-of-12"> 
+            </lightning-button>
+        </div>        
+    </div>
+</template> -->
+<template>
+    <div class="slds-card">
+        <div class="slds-align_absolute-center slds-p-top_medium custom-button-container">
+            <button 
+                onclick={beginScanning} 
+                style='height:200px; width:200px' 
+                class="custom-button slds-button slds-button_brand">
+                <span class="button-label">Begin Scan</span>
+                <br/>
+                <lightning-icon 
+                    variant="inverse" 
+                    icon-name="utility:scan" 
+                    size="medium">
+                </lightning-icon>
+            </button>
+        </div>        
+    </div>
+</template>

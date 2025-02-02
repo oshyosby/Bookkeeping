@@ -1,0 +1,4 @@
+<aura:component implements="lightning:availableForFlowActions">
+        <aura:attribute name="eventName" type="String" required="true" />
+        <aura:attribute name="paramsJSON" type="String" />
+</aura:component>

@@ -1,0 +1,4 @@
+<design:component >
+        <design:attribute name="eventName" label="Name of event to be called" required="true"/>
+        <design:attribute name="paramsJSON" label="Parameters in JSON format" />
+</design:component>
